@@ -1,0 +1,23 @@
+#!/bin/sh
+# Reset total da firewall na VNF-Access
+
+echo "🧹 A limpar regras de firewall..."
+
+# Garantir que a bridge passa tráfego por iptables (caso tenha sido desligado)
+modprobe br_netfilter 2>/dev/null || true
+echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+# Limpa todas as chains e regras
+iptables -F
+iptables -X
+
+# Define políticas default
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT
+
+echo "✔ Firewall reset para ACCEPT em todas as cadeias."
+echo
+echo "Estado atual:"
+iptables -L -v --line-numbers
+
